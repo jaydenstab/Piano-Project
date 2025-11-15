@@ -1,0 +1,20 @@
+import mido, serial, time
+
+ser = serial.Serial('/dev/cu.usbmodem1301', 115200, timeout=0.01)
+time.sleep(2)
+
+src = None
+for name in mido.get_input_names():
+    if "IAC Driver Bus 1" in name:
+        src = name
+        break
+if not src:
+    raise SystemExit("IAC Driver Bus 1 not found.")
+
+print(f"Listening on {src}")
+with mido.open_input(src) as inp:
+    for msg in inp:
+        if msg.type in ("note_on", "note_off"):
+            bytes_to_send = msg.bytes()
+            ser.write(b'\xF0' + bytes(bytes_to_send) + b'\xF7')
+            print(bytes_to_send)
