@@ -82,3 +82,4 @@ void clearAll() {
   solenoidMask = 0;
   updateShiftRegister();
 }
+
